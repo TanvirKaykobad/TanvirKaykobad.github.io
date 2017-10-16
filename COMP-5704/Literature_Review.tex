@@ -90,6 +90,8 @@ Rump, Ogita and Oishi \cite{AFPSPFR} showed that their algorithm results in a va
 In 2013 the authors \cite{APFPA} have shown how to use tree reduced parallelism to compute sum by using parallel associative reduction, iterative refinement and conservative early detection to obtain an algorithm of order $\log {n}$. 
 Neal \cite{FESUSLS} presented two algorithms in one of which a small superaccumulator with 67 64-bit chunks each with 32-bit overlap with the next chunk was used to allow carry propagation to be done infrequently. Kai and wang \cite{LTALCNS} have shown that computing ensuring minimum error when n numbers can be both positive and negative is NP-hard. However their algorithm can sum with no more than $2\ceil*{\log {(n-1)}+1}*\epsilon$, where $\epsilon$ is the worst case minimum error over all possible orders.
 Goodrich and el \cite{PASFPN} presents an algorithm named MapReduce that according to their experimental evaluation achieves up to 80X performance speedup as compared to the state-of-the-art sequential algorithm. The algorithm yields lineary scalability with both the input dataset and number of cores in the cluster.
+H. Leuprecht and W. Oberaigner \cite{PARESFP} proposed a parallel algorithm, a pipeline version of Pichat and Bohlender algorithm, where the sum is associated with a tree. They also discuss the properties a multiprocessor architecture should have for efficient implementation of the algorithm.
+Malcolm \cite{OAFPS} divided each of the n t-digit numbers, forming qn t-digit floating point numbers is then added to one of several  auxiliary t-digit accumulators. Finally, the accumulators are added together to get the computed sum.
 
 
 
