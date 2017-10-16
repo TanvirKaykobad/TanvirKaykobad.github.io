@@ -1,143 +1,103 @@
 
-@article{DEL07,
-	author={F. Dehne and T. Eavis and B. Liang},
-	title={Compressing Data Cubes in Parallel {OLAP} Systems},
-	abstract={},
-	journal={Data Science Journal},
-	volume={6},
-	number={},
-	year={2007},
-	pages={S184-S197}
-} ---------------------------------
- 
-@article{PD07,
-	author={S. Pitre and F. Dehne and A. Chan and J. Cheetham and A. Duong and A. Emili and M. Gebbia and J. Greenblatt and M. Jessulat and N. Krogan and X. Luo and A. Golshani},
-	title={{PIPE}: a protein-protein interaction prediction engine based on the re-occurring short polypeptide sequences between known interacting protein pairs},
-	abstract={Paper classified as "Highly accessed". 1989 downloads in the first five months. Journal impact factor: 4.96.},
-	journal={BMC Bioinformatics},
-	volume={7},
-	number={},
-	year={2006, available via PubMed at http://www.biomedcentral.com/pubmed/16872538},
-	pages={365 (15 pages)}
-} ---------------------------------
+% ===========================================================================
+% Title:
+% ---------------------------------------------------------------------------
+% to create Type I fonts type "dvips -P cmz -t letter <filename>"
+% ===========================================================================
+\documentclass[11pt]{article}       %--- LATEX 2e base
+\usepackage{latexsym}               %--- LATEX 2e base
+%---------------- Wide format -----------------------------------------------
+\textwidth=6in \textheight=9in \oddsidemargin=0.25in
+\evensidemargin=0.25in \topmargin=-0.5in
+%--------------- Def., Theorem, Proof, etc. ---------------------------------
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{property}{Property}
+\newtheorem{observation}{Observation}
+\newtheorem{fact}{Fact}
+\newenvironment{proof}           {\noindent{\bf Proof.} }%
+                                 {\null\hfill$\Box$\par\medskip}
+%--------------- Algorithm --------------------------------------------------
+\newtheorem{algX}{Algorithm}
+\newenvironment{algorithm}       {\begin{algX}\begin{em}}%
+                                 {\par\noindent --- End of Algorithm ---
+                                 \end{em}\end{algX}}
+\newcommand{\step}[2]            {\begin{list}{}
+                                  {  \setlength{\topsep}{0cm}
+                                     \setlength{\partopsep}{0cm}
+                                     \setlength{\leftmargin}{0.8cm}
+                                     \setlength{\labelwidth}{0.7cm}
+                                     \setlength{\labelsep}{0.1cm}    }
+                                  \item[#1]#2    \end{list}}
+                                 % usage: \begin{algorithm} \label{xyz}
+                                 %        ... \step{(1)}{...} ...
+                                 %        \end{algorithm}
+%--------------- Figures ----------------------------------------------------
+\usepackage{graphicx}
 
-@article{DER07,
-	author={F. Dehne and T. Eavis and A. Rau-Chaplin},
-	title={The {cgmCUBE} Project: Optimizing Parallel Data Cube Generation For {ROLAP}},
-	abstract={},
-	journal={Distributed and Parallel Databases},
-	volume={19},
-	number={1},
-	year={2006},
-	pages={29-62}
-} --------------------------------- 
-
-@inproceedings{LDR07,
-	author={M. Lawrence and F. Dehne and A. Rau-Chaplin},
-	title={Implementing {OLAP} Query Fragment Aggregation and Recombination for the {OLAP} Enabled Grid},
-	abstract={http://www.cs.unb.ca/profs/aubanel/hpgc/},
-	booktitle={Proc. International Parallel and Distributed Processing Symposium (IPDPS), High-Performance Grid Computing Workshop},
-	year={2007},
-	publisher={IEEE Comp. Soc. Dig. Library},
-	pages={1-8}
-} ---------------------------------
-
-@inproceedings{DLX06,
-	author={F. Dehne and M. Langston and X. Luo and S. Pitre and P. Shaw and Y. Zhang},
-	title={The Cluster Editing Problem: Implementations and Experiments},
-	abstract={Zuerich, Switzerland, 2006},
-	booktitle={Proc. Int. Workshop on Parameterized and Exact Computation (IWPEC)},
-	year={2006},
-	publisher={Springer LNCS 4169},
-	pages={13-24}
-} ---------------------------------
+\newcommand{\includeFig}[3]      {\begin{figure}[htb] \begin{center}
+                                 \includegraphics
+                                 [width=4in,keepaspectratio] %comment this line to disable scaling
+                                 {#2}\caption{\label{#1}#3} \end{center} \end{figure}}
+                                 % usage: \includeFig{label}{file}{caption}
+%---------------Math--------------------------------------------------------
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 
 
-@inproceedings{CDE06,
-	author={Y. Chen and F. Dehne and T. Eavis and D. Green and A. Rau-Chaplin and E. Sithirasenan},
-	title={{cgmOLAP}: Efficient Parallel Generation and Querying of Terabyte Size {ROLAP} Data Cubes},
-	abstract={Atlanta, GA, 2006},
-	booktitle={Proc. 22nd Int. Conf. on Data Engineering (ICDE)},
-	year={2006},
-	publisher={IEEE Comp. Soc. Dig. Library},
-	pages={164-164}
-} ---------------------------------
+% ===========================================================================
+\begin{document}
+% ===========================================================================
 
-@inproceedings{DFL06,
-	author={F. Dehne and M. Fellows and M. Langston and F. Rosamond and K. Stevens},
-	title={An $O(2^{O(k)} n^3 )$ {FPT} algorithm for the undirected feedback vertex set problem},
-	abstract={Kunming, China},
-	booktitle={Proc. 11th Int. Computing and Combinatorics Conf. (COCOON)},
-	year={2005},
-	publisher={Springer LNCS 3595},
-	pages={859-869}
-} ---------------------------------
+% ############################################################################
+% Title
+% ############################################################################
+
+\title{LITERATURE REVIEW: Accurately computing large floating-point numbers using parallel computing}
 
 
+% ############################################################################
+% Author(s) (no blank lines !)
+\author{
+% ############################################################################
+Tanvir Kaykobad\\
+School of Computer Science\\
+Carleton University\\
+Ottawa, Canada K1S 5B6\\
+{\em TanvirKaykobad@cmail.carleton.ca}
+% ############################################################################
+} % end-authors
+% ############################################################################
 
----------------------------------
+\maketitle
 
-@article{PRS,
-	author={J. Demmel and H. D. Nguyen},
-	title={Parallel reproducible summation},
-	abstract={},
-	journal={IEEE TC},
-	volume={64(7)},
-	number={},
-	year={2015},
-	month={July},
-	pages={2060-2070}
-} ---------------------------------
-@article{AEFPS,
-	author={J. Demmel and Y. Hida},
-	title={Accurate and efficient floating point summation},
-	abstract={},
-	journal={SIAM Journal on Scientic Computing},
-	volume={25(4)},
-	number={},
-	year={2004},
-	pages={1214-1248}
-} ---------------------------------
-@article{AFPSPFR,
-	author={S. M. Rump and T. Ogita and S. Oishi},
-	title={Accurate floating-point summation part i: Faithful rounding},
-	abstract={},
-	journal={SIAM Journal on Scientic Computing},
-	volume={31(1)},
-	number={},
-	year={2008},
-	pages={189-224}
-} ---------------------------------
-@article{APFPA,
-	author={E. Kadric and P. Gurniak and A. DeHon},
-	title={Accurate parallel floating-point accumulation},
-	abstract={},
-	journal={21st IEEE Symp. on Computer Arithmetic (ARITH)},
-	volume={31(1)},
-	number={},
-	year={2013},
-	month={April},
-	pages={153-162}
-} ---------------------------------
-@article{FESUSLS,
-	author={R. M. Neal},
-	title={Fast exact summation using small and large superaccumulators},
-	abstract={},
-	journal={arXiv ePrint},
-	volume={abs/1505.05571},
-	number={},
-	year={2015},
-	month={},
-	pages={153-162}
-} ---------------------------------
-@article{LTALCNS,
-	author={M.-Y. Kao and J. Wang},
-	title={Linear-time approximation algorithms for computing numerical summation with provably small errors},
-	abstract={},
-	journal={SISC},
-	volume={29},
-	number={5},
-	year={2000},
-	month={},
-	pages={1568-1576}
-} ---------------------------------
+
+
+% ############################################################################
+\section{Introduction} \label{intro}
+% ############################################################################
+
+There are SIMD algorithms for accurately summing up a very large number of small and large floating point numbers in parallel. It is known that for accurately summing up a very large number of small and large floating point numbers one has to use snowball effect to obtain larger numbers from small ones. I would like to pursue this idea and extend it in parallel computing. I would like to introduce a huffman-tree like structure to pair floating point numbers of similar magnitude so they can be summed up more accurately, ensuring minimum rounding error in the worst case while compromising as little as possible in non-parallel computation time.
+
+% ############################################################################
+\section{Literature Review} \label{litrev}
+% ############################################################################
+
+Demmel and Nguyen \cite{PRS} used Rump’s algorithm for floating point summation that is reproducible independent of the order of summation that may be different with the dynamic scheduling of parallel computing resources and floating point nonassociativity. Their absolute error bound is 2-28 times macheps, and requires constant amount of extra memory usage.Demmel and Hida \cite{AEFPS} analysed several algorithms and showed that if a wider accumulator of F bits is used to sum n floating point numbers each of at most f bits, and if sum is carried out in descending order of exponents then an error of at most 1.5 times the least significant bit can occur provided that number of summands does not exceed $2^{(F-f)}$.
+Rump, Ogita and Oishi \cite{AFPSPFR} showed that their algorithm results in a value nearest to the true sum. 
+In 2013 the authors \cite{APFPA} have shown how to use tree reduced parallelism to compute sum by using parallel associative reduction, iterative refinement and conservative early detection to obtain an algorithm of order log n. 
+Neal \cite{FESUSLS} presented two algorithms in one of which a small superaccumulator with 67 64-bit chunks each with 32-bit overlap with the next chunk was used to allow carry propagation to be done infrequently. Kai and wang \cite{LTALCNS} have shown that computing ensuring minimum error when n numbers can be both positive and negative is NP-hard. However their algorithm can sum with no more than $2\ceil*{\log {(n-1)}+1}*\epsilon$, where $\epsilon$ is the worst case minimum error over all possible orders.
+
+
+
+% ############################################################################
+% Bibliography
+% ############################################################################
+\bibliographystyle{plain}
+\bibliography{my-bibliography}     %loads my-bibliography.bib
+
+% ============================================================================
+\end{document}
+% ============================================================================
