@@ -42,6 +42,15 @@
                                  [width=4in,keepaspectratio] %comment this line to disable scaling
                                  {#2}\caption{\label{#1}#3} \end{center} \end{figure}}
                                  % usage: \includeFig{label}{file}{caption}
+%---------------Math--------------------------------------------------------
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+%--------------Images------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{ {Figures/} }
+
 
 
 % ===========================================================================
@@ -52,18 +61,18 @@
 % Title
 % ############################################################################
 
-\title{--- Your Project Title ---}
+\title{Accurately computing large floating-point numbers using parallel computing}
 
 
 % ############################################################################
 % Author(s) (no blank lines !)
 \author{
 % ############################################################################
-John Doe\\
+Tanvir Kaykobad\\
 School of Computer Science\\
 Carleton University\\
 Ottawa, Canada K1S 5B6\\
-{\em John-Doe@scs.carleton.ca}
+{\em TanvirKaykobad@cmail.carleton.ca}
 % ############################################################################
 } % end-authors
 % ############################################################################
@@ -74,7 +83,7 @@ Ottawa, Canada K1S 5B6\\
 % Abstract
 % ############################################################################
 \begin{abstract}
-Give a brief overview of what you have achieved.
+An accurate floating-point sum algorithm is looked at and implemented. Primariy Goodrich et al.'s superaccumulator mapreduce algorithm is analyzed and the performance of the algorithm is compared.
 \end{abstract}
 
 
@@ -82,74 +91,76 @@ Give a brief overview of what you have achieved.
 \section{Introduction} \label{intro}
 % ############################################################################
 
-Introduce your project topic (start from parallel computing in
-general and lead to your particular topic). Describe your project
-goals. Describe what you have achieved in your project. Outline
-the structure of your paper. (In Section~\ref{litrev}, we will
-review the relevant literature. Section~\ref{projrep} will present
-the results of our project. In Section~\ref{subsect1}, ...
-Section~\ref{concl} concludes the paper.
-
+There are SIMD algorithms for accurately summing up very large number of small and large floating point numbers in parallel. It is known that for accurately summing up such a set of numbers one has to use snowball effect to obtain larger numbers from smaller ones. This idea is explored to see if it can be extended in parallel computing by introducing a huffman-tree like structure to pair floating point numbers of similar magnitude so they can be summed up more accurately, ensuring minimum rounding error in the worst case while compromising as little as possible in non-parallel computation time. However no non-heuristic algorithm currently exists for parallelizing Huffman-tree computation, thus I have opted for implementing and testing the existing state of art algorithm provided by Goodrich et al \cite{PASFPN} My implementation has been similar to that of Goodrich's, however I have summed the carry bit afterwards which requires an iteration of all the digits in the resulting number that Goodrich avoided.
 
 % ############################################################################
 \section{Literature Review} \label{litrev}
 % ############################################################################
 
-Give an overview of the relevant literature. Cite all relevant
-papers, like \cite{DEL07}, \cite{PD07}, \cite{DER07}, \cite{LDR07},
-\cite{DLX06}, \cite{CDE06}, and \cite{DFL06}. Outline for each paper
-the relevant results in relation to your project. Make sure that you
-don't just list all relevant papers in random order. Devise a scheme
-to group papers by subject. The goal of this section is to present
-to the reader the state-of-the-art in the field selected for your
-project.
+Demmel and Nguyen \cite{PRS} used Rump’s algorithm for floating point summation that is reproducible independent of the order of summation that may be different with the dynamic scheduling of parallel computing resources and floating point nonassociativity. Their absolute error bound is $2^{-28}$ times macheps, and requires constant amount of extra memory usage.Demmel and Hida \cite{AEFPS} analysed several algorithms and showed that if a wider accumulator of F bits is used to sum n floating point numbers each of at most f bits, and if sum is carried out in descending order of exponents then an error of at most 1.5 times the least significant bit can occur provided that number of summands does not exceed $2^{(F-f)}$.
+Rump, Ogita and Oishi \cite{AFPSPFR} showed that their algorithm results in a value nearest to the true sum. 
+In 2013 the authors \cite{APFPA} have shown how to use tree reduced parallelism to compute sum by using parallel associative reduction, iterative refinement and conservative early detection to obtain an algorithm of order $\log {n}$. 
+Neal \cite{FESUSLS} presented two algorithms in one of which a small superaccumulator with 67 64-bit chunks each with 32-bit overlap with the next chunk was used to allow carry propagation to be done infrequently. Kai and wang \cite{LTALCNS} have shown that computing ensuring minimum error when n numbers can be both positive and negative is NP-hard. However their algorithm can sum with no more than $2\ceil*{\log {(n-1)}+1}*\epsilon$, where $\epsilon$ is the worst case minimum error over all possible orders.
+Goodrich et al \cite{PASFPN} presents an algorithm named MapReduce that according to their experimental evaluation achieves up to 80X performance speedup as compared to the state-of-the-art sequential algorithm. The algorithm yields lineary scalability with both the input dataset and number of cores in the cluster.
+H. Leuprecht and W. Oberaigner \cite{PARESFP} proposed a parallel algorithm, a pipeline version of Pichat and Bohlender algorithm, where the sum is associated with a tree. They also discuss the properties a multiprocessor architecture should have for efficient implementation of the algorithm.
+Malcolm \cite{OAFPS} divided each of the n t-digit numbers, forming qn t-digit floating point numbers is then added to one of several  auxiliary t-digit accumulators. Finally, the accumulators are added together to get the computed sum.
 
 % ############################################################################
-\section{Project Report} \label{projrep}
+\section{Algorithm} \label{algo}
 % ############################################################################
 
-Present the results of your project. Add subsections as appropriate...
+Normally floating point numbers are represented as $$x=(-1)^{b} * (1+2^{-t}M)*2^{E-2^{l-1}-1}$$. Here variable $t$ and $l$ are set for different fixed precision scheme. There are two main issues that are found in summing floating-point numbers.
 
-% ----------------------------------------------------------------------------
-\subsection{Subsection 1} \label{subsect1}
-% ----------------------------------------------------------------------------
+\begin{itemize}
+	\item Round off error while adding floating-point numbers
+	\item Achieving parallelism in the process of summing up the floating-point numbers
+\end{itemize}
 
-...
+Summing two floating point number can be shown as $$x \oplus y = (x+y)(1- \epsilon_{xy})$$ where $\epsilon_{xy}$ is specific round off error for specific machine.
+A standard way to sum numbers is creating a binary tree, but there are 2 problems-
 
-% ----------------------------------------------------------------------------
-\subsection{Subsection 2} \label{subsect2}
-% ----------------------------------------------------------------------------
+\begin{itemize}
+	\item If the set of floating-point numbers contain both positive and negative numbers then finding its 'Huffman tree' is an NP-complete problem. \cite{LTALCNS}
+	\item Even if all the floating-point numbers are positive, they are prone to round off errors.
+\end{itemize}
 
-...
+Initially my goal was to implement a parallelized 'Huffman tree' sturcture for finding the smallest floating-point numbers and then summing them so the result would have a snow ball effect reducing the error in the final result. However Kao and Wang \cite{LTALCNS} showed that finding the 'Huffman tree' is an NP complete problem for positive and negative numbers combined. Thus ideally we need a method which will work for independent precision points. To achieve this Goodrich et al \cite{PASFPN} convert the numbers to a different representation, compute the sum exactly in that representation and then convert the result back to a faithfully rounded format. Also, it has to be ensure that there are no carry bits in intermediate representation which helps to parallelize the process. To achieve these goals one option is to represent each number by shifting its binary point. This representation wastes a lot of memory but is error free. But it has a lot of carry bit which does not help in parallel processing but nonetheless is promising due to it precision. A second option is to represent the floating point numbers using super accumulator where floating point number is represented as a vector which have strictly increasing exponents. Neither of these systems help parallelization because of the carry required for each bit which in turn requires an $O(n)$ cost for propagating a carry calculation all the way from the least significant bit to the most.
 
-% ----------------------------------------------------------------------------
-\subsection{Subsection 3} \label{subsect3}
-% ----------------------------------------------------------------------------
+In Goodrich et al's work they allow each $y_i$ to be positive or negative. The floating point numbers are shifted right without the loss of generality as it can be shifted back later on while keeping the sign bit (GSD) to identify positive and negative numbers. A super accumulator is called $(\alpha,\beta)$ regularized if $y_i = Y_i * R^i$. Fir a guveb radux abd eacg nabtussa $Y_i$ in a range $[-\alpha, \beta]$ for $\alpha, \beta \geq 2$. For a fixed t, R is chosen to be a power of two $2^{t-1} > 2$ so that each $y_i$ can be represented using floating point exponent storing a multiple of $t-1$. For simplicity the authors chose $\alpha = \beta = R-1$. The sum of two super accumulators $y_i$ amd $z_i$ first the sum of the mantissa $P_i = Y_i + Z_i$ is computed. This sum is then reduced to an interim mantissa sum $W_i = P_i - C_{i+1}R_j$ where $C_{i+1}$ is the signed carry bit of value between ${-1,0,1}$. It is chosen to guarantee that W is in the range $[-(\alpha-1), \beta-1]$. The computed mantissa sum is then performed as $S_i = W_i + C_i$ so that the resulting collection of $S_i$ components is $(\alpha,\beta)$ regularized and no carry bit propagation is necessay.
 
-...
+% ############################################################################
+\section{Results} \label{results}
+% ############################################################################
 
-You can also have figures in your paper. Figure~\ref{fig1} is a
-typical example of an experimental evaluation result. Such graphs
-are ususally created with GnuPlot. Figure~\ref{fig2} is an example
-of a drawing created with {\em mdraw} or {\em epsfig}.
+In my code I have failed to implement $(\alpha, \beta)$ regulerization and its inverse properly so instead of using it for avoiding carry bit summation in my implementation, I have opted for $O(k)$ scan over the result where k is the number of digits in length between the least significant digit or the smallest and most significant digit of the biggest number. While this is a cost that I suspect would cost a performance reduction in cases where the value of k is extremely large, since this is a sum over integers (carrybit) instead of floating-point numbers and because k is usually a much smaller number compared to n, this limitation's affect should be minimal.
 
-% usage: \includeFig{label}{file}{caption}
-
-\includeFig{fig1}{Figures/figure-1}{Measured Running Times
-Of Some Unknown Algorithm Implementation}
-
-\includeFig{fig2}{Figures/figure-2}{XYZ and Hilbert Packings}
+Let us add n numbers $y_i = (z_i d_i)$ where $z_i$ is the integer part and $d_i$ is the possible decimal part. Let maximum ${z_i}$ contain k digits and $max(d_i)$ contain d digits. Then maximum size of the sum could be $k + d + \floor*{\log_b {n}}$ digits. Let us further assume that size of accumulator is s. Then divide each number into chunks of $s - \floor*{\log_b {n}} - 1$ digits and indexing from right to obtain $y_i =(y_ip, y_{ip-1},..., y_0)$, where $p=\ceil*{\frac{k+d}{s- \floor*{\log_b {n}}}}$. Now, $\sum\limits_{j=0}^{p}y_{ij}$ can be calculated exactly (assuming that they are integers) in logarithmic time by using $\approx \frac{n}{\log_2 {n}}$ processors.  
 
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{goodrich_performance}
+{\footnotesize \par}
+\caption{Total running time obtain by Goodrich et al. \cite{PASFPN} as the input size increases from 1 million to 1 billion numbers}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.60\textwidth} % choose width suitably
+\includegraphics[width=\linewidth]{performance}
+{\footnotesize \par}
+\end{minipage}
+\caption{Performance between 256 threads and 1 thread running on NVidia GTX570 on Windows for N random floating-point numbers}
+\end{figure}
+
+In my test I have used an Nvidia GTX 570 processor on a windows machine. The parallized (blue) version of the program used 256 threads while the non-parallelized version used 1 thread per block. As we can see, the parallel version of the algorithm works much better than it's sequential counterpart (running 1 thread instead of 256 threads). However, the result is significantly inferior to that obtained by Goodrich et al. This is partly due to the time taken in processing the data into the right format (extracting the mantessa and the exponent). Also the different calculation for the carry bit handling played a role in the result as well.
 
 
 % ############################################################################
 \section{Conclusion} \label{concl}
 % ############################################################################
 
-The ``moral of the story'': What have we learned? What did we achieve?
-What did we not achieve? What would we do better next time? Possibilities
-for future research...
+In this project I have implemented a parallelized algorithm for summing large number of floating-point numbers accurately. We have seen that the parallel implementation runs noticably faster than the non-parallelized implementation of the algorithm. However, because my implementation of $(\alpha, \beta)$ regulerization had flaws, I ended up linearly summing the carry bit instead of avoiding it like it was proposed by Goodrich et al. None-the-less the performance was inferior but comparable to the performance they got in their paper. Since I did not use the exact same machine as they have, it is hard to compare the exact performance difference between my implementations. For further work the $(\alpha, \beta)$ regulerization function needs to be fixed for a more accurate performance comparison between the implementations.
 
 % ############################################################################
 % Bibliography

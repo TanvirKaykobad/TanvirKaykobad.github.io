@@ -17,26 +17,38 @@
                                  %        \item ...
                                  %        \item ...
                                  %        \end{slide}
+%---------------Math--------------------------------------------------------
+%\usepackage{mathtools}
+%\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\usepackage{skmath}
+\ExplSyntaxOn
+\RenewDocumentCommand\log{oom}{%
+  \IfNoValueTF{#1}
+    {\ensuremath{\__skmath_log:\IfNoValueTF{#2}{}{\c_math_superscript_token{#2}}\__skmath_parens:n{#3}}}
+    {\ensuremath{\__skmath_log:\c_math_subscript_token{#1}\IfNoValueTF{#2}{}{\c_math_superscript_token{#2}}\__skmath_parens:n{#3}}}%
+}
+\ExplSyntaxOff
+
 % ===========================================================================
 \begin{document}
-% ===========================================================================
 
 % ############################################################################
 % Title
 % ############################################################################
 
-\title{PRESENTATION OUTLINE: --- Your Project Title ---}
+\title{PRESENTATION OUTLINE: --- Accurately computing large floating-point numbers using parallel computing ---}
 
 
 % ############################################################################
 % Author(s) (no blank lines !)
 \author{
 % ############################################################################
-John Doe\\
+Tanvir Kaykobad\\
 School of Computer Science\\
 Carleton University\\
 Ottawa, Canada K1S 5B6\\
-{\em John-Doe@scs.carleton.ca}
+{\em tanvirkaykobad@cmail.carleton.ca}
 % ############################################################################
 } % end-authors
 % ############################################################################
@@ -44,23 +56,15 @@ Ottawa, Canada K1S 5B6\\
 \maketitle
 
 % ############################################################################
-\begin{slide}{Title of my first slide}
-\item first thing
-\item second thing
-\item third thing
-\item fourth thing
-\end{slide}
+\begin{slide}{Parallel algorithms for summing floating point numbers}
+\item Parallelism important for scaling
+\item Most parallel algorithms are based on parallelising data pipelining and not on polylogarithmic running times.
+\item Eatl introduced superaccumulator for efficient parallel algorithms for faithfully rounded floating point sum for exactly summing n numbers.
 
+\item This paper computes sum of n numbers in $O(\log[][] {n})$ time using $n$ processors 
+\item Sum can be computed in $O(\log[][2]{n}\log[][]{}\log[][]{}\log[][]{}C(X))$ time using $O(n\log[][]{}C(X))$ work
+\end {slide}
 
-% ############################################################################
-\begin{slide}{Title of my second slide}
-\item first thing
-\item second thing
-\item third thing
-\item fourth thing
-\end{slide}
-
-\noindent ... more slides ...
 
 % ############################################################################
 % Bibliography
